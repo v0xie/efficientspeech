@@ -374,6 +374,10 @@ def get_args():
                         default="tiny_english",
                         type=str,
                         help="Output folder")
+    parser.add_argument('--resume-from-checkpoint',
+                        default=None,
+                        type=str,
+                        help="Resume training from .ckpt file")
     #parser.add_argument('--seed',
     #                    type=int,
     #                    default=0,

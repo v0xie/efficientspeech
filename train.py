@@ -1,7 +1,7 @@
 
 
 import yaml
-#import os
+import os
 
 #import numpy as np
 #import torch
@@ -13,6 +13,7 @@ from pytorch_lightning.strategies.ddp import DDPStrategy
 from utils.tools import get_args
 from model import EfficientFSModule
 
+os.environ['MASTER_ADDR'] = 'localhost'
 
 def print_args(args):
     opt_log =  '--------------- Options ---------------\n'
@@ -74,6 +75,7 @@ if __name__ == "__main__":
                       #strategy="ddp",
                       strategy = DDPStrategy(find_unused_parameters=False),
                       check_val_every_n_epoch=10,
-                      max_epochs=args.max_epochs,)
+                      max_epochs=args.max_epochs,
+                      resume_from_checkpoint=args.resume_from_checkpoint)
 
     trainer.fit(pl_module, datamodule=datamodule)
