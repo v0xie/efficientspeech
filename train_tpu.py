@@ -73,7 +73,6 @@ if __name__ == "__main__":
     trainer = Trainer(accelerator=args.accelerator, 
                     devices=args.devices,
                     precision=args.precision,
-                    tpu_cores=8,
                     #strategy="ddp",
                     strategy = TPUSpawnStrategy(find_unused_parameters=False),
                     check_val_every_n_epoch=10,
