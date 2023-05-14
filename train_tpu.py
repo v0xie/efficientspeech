@@ -9,7 +9,7 @@ import os
 from datamodule import LJSpeechDataModule
 from pytorch_lightning import Trainer
 from pytorch_lightning.strategies.ddp import DDPStrategy
-from pytorch_lightning.strategies.tpu_spawn import TPUSpawnStrategy
+from pytorch_lightning.strategies.xla import XLAStrategy
 
 from utils.tools import get_args
 from model import EfficientFSModule
@@ -74,7 +74,7 @@ if __name__ == "__main__":
                     devices=args.devices,
                     precision=args.precision,
                     #strategy="ddp",
-                    strategy = TPUSpawnStrategy(find_unused_parameters=False),
+                    strategy = XLAStrategy(find_unused_parameters=False),
                     check_val_every_n_epoch=10,
                     max_epochs=args.max_epochs,
                     resume_from_checkpoint=args.resume_from_checkpoint)
