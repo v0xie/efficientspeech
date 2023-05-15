@@ -8,8 +8,9 @@ import time
 
 from layers import PhonemeEncoder, MelDecoder, Phoneme2Mel
 from pytorch_lightning import LightningModule
+from torch import compile
 from torch.optim import AdamW
-from utils.tools import write_to_file
+from utils.tools import write_to_file, timed
 from scheduler_hack import LinearWarmupCosineAnnealingLR
 
 def get_hifigan(checkpoint="hifigan/LJ_V2/generator_v2", infer_device=None, verbose=False):
@@ -54,6 +55,8 @@ class EfficientFSModule(LightningModule):
         self.warmup_epochs = warmup_epochs
         self.max_epochs = max_epochs
         self.wav_path = wav_path
+
+        self._fn_training_step = None
 
         with open(os.path.join(preprocess_config["path"]["preprocessed_path"], "stats.json")) as f:
             stats = json.load(f)
@@ -159,8 +162,13 @@ class EfficientFSModule(LightningModule):
 
         return mel_loss, pitch_loss, energy_loss, duration_loss
  
-
     def training_step(self, batch, batch_idx):
+        if not self._fn_training_step:
+            print('Compiling training step')
+            self._fn_training_step = torch.compile(self._training_step, mode='reduce-overhead', disable=True)
+        return self._fn_training_step(batch, batch_idx)
+        
+    def _training_step(self, batch, batch_idx):
         x, y = batch
         y_hat = self.forward(x)
 

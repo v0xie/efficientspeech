@@ -4,13 +4,14 @@ import yaml
 import os
 
 #import numpy as np
-#import torch
+import torch
 
 from datamodule import LJSpeechDataModule
 from pytorch_lightning import Trainer
 from pytorch_lightning.strategies.ddp import DDPStrategy
+from torch import compile
 
-from utils.tools import get_args
+from utils.tools import get_args, timed
 from model import EfficientFSModule
 
 os.environ['MASTER_ADDR'] = 'localhost'
