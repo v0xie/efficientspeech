@@ -76,6 +76,8 @@ if __name__ == "__main__":
                       strategy = DDPStrategy(find_unused_parameters=False),
                       check_val_every_n_epoch=10,
                       max_epochs=args.max_epochs,
-                      resume_from_checkpoint=args.resume_from_checkpoint)
+                      resume_from_checkpoint=args.resume_from_checkpoint,
+                      log_every_n_steps=3,
+                      profiler="simple")
 
     trainer.fit(pl_module, datamodule=datamodule)

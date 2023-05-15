@@ -87,7 +87,9 @@ class LJSpeechDataModule(LightningDataModule):
                                            shuffle=True,
                                            batch_size=self.batch_size,
                                            collate_fn=self.collate_fn,
-                                           num_workers=self.num_workers)
+                                           num_workers=self.num_workers,
+                                           pin_memory=True)
+#                                           persistent_workers=True)
         return self.train_dataloader
 
     def test_dataloader(self):
@@ -95,7 +97,9 @@ class LJSpeechDataModule(LightningDataModule):
                                           shuffle=False,
                                           batch_size=self.batch_size,
                                           collate_fn=self.collate_fn,
-                                          num_workers=self.num_workers)
+                                          num_workers=self.num_workers,
+                                          pin_memory=True)
+#                                          persistent_workers=True)
         return self.test_dataloader
     
     def val_dataloader(self):

@@ -8,9 +8,12 @@ import time
 
 from layers import PhonemeEncoder, MelDecoder, Phoneme2Mel
 from pytorch_lightning import LightningModule
+from pytorch_lightning.core.optimizer import LightningOptimizer
+import pytorch_lightning
 from torch.optim import AdamW
 from utils.tools import write_to_file
-from pl_bolts.optimizers.lr_scheduler import LinearWarmupCosineAnnealingLR
+from torch.optim.lr_scheduler import CosineAnnealingLR
+#from pl_bolts.optimizers.lr_scheduler import LinearWarmupCosineAnnealingLR
 
 def get_hifigan(checkpoint="hifigan/LJ_V2/generator_v2", infer_device=None, verbose=False):
     # get the main path
@@ -49,6 +52,7 @@ class EfficientFSModule(LightningModule):
                  infer_device=None, dropout=0.0, verbose=False):
         super(EfficientFSModule, self).__init__()
 
+        self.automatic_optimization = True
         self.preprocess_config = preprocess_config
         self.lr = lr
         self.warmup_epochs = warmup_epochs
@@ -225,8 +229,9 @@ class EfficientFSModule(LightningModule):
 
     def configure_optimizers(self):
         optimizer = AdamW(self.parameters(), lr=self.lr, weight_decay=1e-5)
-        self.scheduler = LinearWarmupCosineAnnealingLR(optimizer, \
-                            warmup_epochs=self.warmup_epochs, max_epochs=self.max_epochs)
+        self.scheduler = CosineAnnealingLR(optimizer, self.max_epochs)
+        #self.scheduler = LinearWarmupCosineAnnealingLR(optimizer, \
+        #                    warmup_epochs=self.warmup_epochs, max_epochs=self.max_epochs)
         return [optimizer], [self.scheduler]
 
 
