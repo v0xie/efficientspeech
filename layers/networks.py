@@ -252,7 +252,7 @@ class FeatureUpsampler(nn.Module):
 
         features = torch.stack(features)
         masks = torch.stack(masks)
-        len_pred = torch.IntTensor(mel_len)
+        len_pred = torch.IntTensor(mel_len).to(features.device)
         #len_pred = torch.LongTensor(mel_len).to(features.device)
 
         return features, masks, len_pred

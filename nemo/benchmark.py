@@ -68,7 +68,7 @@ class mel(torch.nn.Module):
     def forward(self, x):
         if "tacotron2" in self.model_name:
             token_embedding = self.model.text_embedding(x).transpose(1, 2)
-            token_len = torch.tensor([len(i) for i in x])
+            token_len = torch.tensor([len(i) for i in x]).to(self.device)
             encoder_embedding = self.model.encoder(token_embedding=token_embedding, token_len=token_len)
             spec_pred_dec, gate_pred, alignments, pred_length = self.model.decoder(
                 memory=encoder_embedding, memory_lengths=token_len

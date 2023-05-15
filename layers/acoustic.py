@@ -41,7 +41,7 @@ class LengthRegulator(nn.Module):
         #print("output shape", output.shape)
         #print("mel_len shape", mel_len)
         
-        return output, torch.LongTensor(mel_len)
+        return output, torch.LongTensor(mel_len).to(x.device)
 
     def expand(self, batch, predicted):
         out = list()
@@ -78,7 +78,7 @@ class LengthRegulatorONNX(nn.Module):
         else:
             output = pad(output)
 
-        return output, torch.LongTensor(mel_len)
+        return output, torch.LongTensor(mel_len).to(x.device)
 
     def expand(self, batch, predicted):
         out = list()
