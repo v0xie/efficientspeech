@@ -80,7 +80,7 @@ if __name__ == "__main__":
                       strategy = DDPStrategy(find_unused_parameters=False),
                       check_val_every_n_epoch=10,
                       max_epochs=args.max_epochs,
-                      log_every_n_steps=3,
+                      log_every_n_steps=50,
                       logger=tb_logger)
 
     trainer.fit(pl_module, datamodule=datamodule, ckpt_path=args.resume_from_checkpoint)
