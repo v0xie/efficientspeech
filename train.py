@@ -77,7 +77,7 @@ if __name__ == "__main__":
 
     # You are using a CUDA device ('NVIDIA GeForce RTX 3080') that has Tensor Cores. To properly utilize them, you should set `torch.set_float32_matmul_precision('medium' | 'high')` which will trade-off precision for performance. For more details, read https://pytorch.org/docs/stable/generated/torch.set_float32_matmul_precision.html#torch.set_float32_matmul_precision
     torch.set_float32_matmul_precision('medium')
-    logger = TensorBoardLogger(save_dir=args.log_dir)
+    tb_logger = TensorBoardLogger(save_dir=args.log_dir)
         
     trainer = Trainer(accelerator=args.accelerator, 
                       devices=args.devices,
@@ -86,6 +86,7 @@ if __name__ == "__main__":
                       strategy = DDPStrategy(find_unused_parameters=False),
                       check_val_every_n_epoch=10,
                       max_epochs=args.max_epochs,
-                      log_every_n_steps=3)
+                      log_every_n_steps=3,
+                      logger=tb_logger)
 
     trainer.fit(pl_module, datamodule=datamodule, ckpt_path=args.resume_from_checkpoint)
