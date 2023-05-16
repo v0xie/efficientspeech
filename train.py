@@ -1,19 +1,12 @@
 
 
 import yaml
-import os
+#import os
 
 #import numpy as np
 import torch
 
 from datamodule import LJSpeechDataModule
-from lightning import Trainer
-from lightning.pytorch.strategies.ddp import DDPStrategy
-from lightning.pytorch.callbacks import DeviceStatsMonitor
-from lightning.pytorch.profilers import SimpleProfiler, AdvancedProfiler
-from lightning.pytorch.loggers import TensorBoardLogger
-from torch import compile
-from torch import _dynamo
 
 from utils.tools import get_args, timed
 from model import EfficientFSModule

@@ -382,6 +382,12 @@ def get_args():
                         default='lightning_logs',
                         type=str,
                         help="Where to save training logs")
+    parser.add_argument('--pin-memory',
+                        action='store-true'
+                        help="Copy tensors into device/cuda before returning them")
+    parser.add_argument('--persistent-workers',
+                        action='store_true',
+                        help="Maintain workers Dataset instances alive")
     #parser.add_argument('--seed',
     #                    type=int,
     #                    default=0,

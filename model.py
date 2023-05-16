@@ -9,10 +9,8 @@ import time
 from layers import PhonemeEncoder, MelDecoder, Phoneme2Mel
 from lightning import LightningModule
 from torch import compile
-import torch._dynamo as dynamo
-from torch._dynamo.utils import CompileProfiler
 from torch.optim import AdamW
-from utils.tools import write_to_file, timed
+from utils.tools import write_to_file
 from scheduler_hack import LinearWarmupCosineAnnealingLR
 
 def get_hifigan(checkpoint="hifigan/LJ_V2/generator_v2", infer_device=None, verbose=False):
@@ -57,6 +55,8 @@ class EfficientFSModule(LightningModule):
         self.warmup_epochs = warmup_epochs
         self.max_epochs = max_epochs
         self.wav_path = wav_path
+
+        self.training_step_outputs = []
 
         self.training_step_outputs = []
 
@@ -172,7 +172,12 @@ class EfficientFSModule(LightningModule):
         loss = (10. * mel_loss) + (2. * pitch_loss) + (2. * energy_loss) + duration_loss
 
         output = {"loss": loss, "mel_loss": mel_loss, "pitch_loss": pitch_loss,
+
+        output = {"loss": loss, "mel_loss": mel_loss, "pitch_loss": pitch_loss,
                 "energy_loss": energy_loss, "duration_loss": duration_loss}
+        self.training_step_outputs.append(output)
+        return output
+            
         self.training_step_outputs.append(output)
         return output
             
@@ -180,7 +185,7 @@ class EfficientFSModule(LightningModule):
     # https://github.com/Lightning-AI/lightning/pull/16520
     #def training_epoch_end(self, outputs):
     def on_train_epoch_end(self):
-        #avg_loss = torch.stack([x["loss"] for x in self.training_step_outputs]).mean()
+        # This if condition is necessary for resuming training, since training_step_outputs can be empty
         if len(self.training_step_outputs) > 0:
             avg_mel_loss = torch.stack([x["mel_loss"] for x in self.training_step_outputs]).mean()
             avg_pitch_loss = torch.stack([x["pitch_loss"] for x in self.training_step_outputs]).mean()
@@ -225,11 +230,13 @@ class EfficientFSModule(LightningModule):
                     f.write(text[i] + "\n")
             
     def on_test_epoch_end(self, outputs):
+    def on_test_epoch_end(self, outputs):
         pass
 
     def validation_step(self, batch, batch_idx):
         return self.test_step(batch, batch_idx)
 
+    def on_validation_epoch_end(self):
     def on_validation_epoch_end(self):
         pass
 
