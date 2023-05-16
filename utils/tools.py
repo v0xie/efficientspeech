@@ -304,7 +304,7 @@ def get_args():
     parser = argparse.ArgumentParser()
     parser.add_argument("--accelerator", type=str, default="cuda")
     parser.add_argument("--devices", type=int, default=1)
-    parser.add_argument("--precision", default=16, type=int)
+    parser.add_argument("--precision", default='16-mixed', type=str)
     parser.add_argument("--num_workers", type=int, default=4)
     parser.add_argument("--max_epochs", type=int, default=5000)
     parser.add_argument("--warmup_epochs", type=int, default=50)
