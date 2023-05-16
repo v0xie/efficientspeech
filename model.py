@@ -228,7 +228,7 @@ class EfficientFSModule(LightningModule):
     def validation_step(self, batch, batch_idx):
         return self.test_step(batch, batch_idx)
 
-    def on_validation_epoch_end(self, outputs):
+    def on_validation_epoch_end(self):
         pass
 
     def configure_optimizers(self):
