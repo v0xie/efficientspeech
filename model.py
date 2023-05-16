@@ -222,13 +222,13 @@ class EfficientFSModule(LightningModule):
                 for i in range(len(text)):
                     f.write(text[i] + "\n")
             
-    def test_epoch_end(self, outputs):
+    def on_test_epoch_end(self, outputs):
         pass
 
     def validation_step(self, batch, batch_idx):
         return self.test_step(batch, batch_idx)
 
-    def validation_epoch_end(self, outputs):
+    def on_validation_epoch_end(self, outputs):
         pass
 
     def configure_optimizers(self):
