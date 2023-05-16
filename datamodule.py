@@ -6,7 +6,7 @@ from torch.utils.data import Dataset, DataLoader
 
 from text import text_to_sequence
 from utils.tools import pad_1D, pad_2D
-from pytorch_lightning import LightningDataModule
+from lightning import LightningDataModule
 from utils.tools import get_mask_from_lengths
 
 class LJSpeechDataModule(LightningDataModule):

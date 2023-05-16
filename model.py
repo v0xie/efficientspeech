@@ -7,7 +7,7 @@ import torch.nn as nn
 import time
 
 from layers import PhonemeEncoder, MelDecoder, Phoneme2Mel
-from pytorch_lightning import LightningModule
+from lightning import LightningModule
 from torch import compile
 from torch.optim import AdamW
 from utils.tools import write_to_file, timed
@@ -56,7 +56,7 @@ class EfficientFSModule(LightningModule):
         self.max_epochs = max_epochs
         self.wav_path = wav_path
 
-        self._fn_training_step = None
+        self.training_step_outputs = []
 
         with open(os.path.join(preprocess_config["path"]["preprocessed_path"], "stats.json")) as f:
             stats = json.load(f)
@@ -163,36 +163,36 @@ class EfficientFSModule(LightningModule):
         return mel_loss, pitch_loss, energy_loss, duration_loss
  
     def training_step(self, batch, batch_idx):
-        if not self._fn_training_step:
-            print('Compiling training step')
-            self._fn_training_step = torch.compile(self._training_step, mode='reduce-overhead')
-        return self._fn_training_step(batch, batch_idx)
-        
-    def _training_step(self, batch, batch_idx):
         x, y = batch
         y_hat = self.forward(x)
 
         mel_loss, pitch_loss, energy_loss, duration_loss = self.loss(y_hat, y, x)
         loss = (10. * mel_loss) + (2. * pitch_loss) + (2. * energy_loss) + duration_loss
-        
-        return {"loss": loss, "mel_loss": mel_loss, "pitch_loss": pitch_loss,
+
+        output = {"loss": loss, "mel_loss": mel_loss, "pitch_loss": pitch_loss,
                 "energy_loss": energy_loss, "duration_loss": duration_loss}
+        self.training_step_outputs.append(output)
+        return output
+            
 
-
-    def training_epoch_end(self, outputs):
+    # https://github.com/Lightning-AI/lightning/pull/16520
+    #def training_epoch_end(self, outputs):
+    def on_train_epoch_end(self):
         #avg_loss = torch.stack([x["loss"] for x in outputs]).mean()
-        avg_mel_loss = torch.stack([x["mel_loss"] for x in outputs]).mean()
-        avg_pitch_loss = torch.stack([x["pitch_loss"] for x in outputs]).mean()
+        avg_mel_loss = torch.stack([x["mel_loss"] for x in self.training_step_outputs]).mean()
+        avg_pitch_loss = torch.stack([x["pitch_loss"] for x in self.training_step_outputs]).mean()
         avg_energy_loss = torch.stack(
-            [x["energy_loss"] for x in outputs]).mean()
+            [x["energy_loss"] for x in self.training_step_outputs]).mean()
         avg_duration_loss = torch.stack(
-            [x["duration_loss"] for x in outputs]).mean()
+            [x["duration_loss"] for x in self.training_step_outputs]).mean()
         #self.log("train", avg_loss, on_epoch=True, prog_bar=True)
         self.log("mel", avg_mel_loss, on_epoch=True, prog_bar=True, sync_dist=True)
         self.log("pitch", avg_pitch_loss, on_epoch=True, prog_bar=True, sync_dist=True)
         self.log("energy", avg_energy_loss, on_epoch=True, prog_bar=True, sync_dist=True)
         self.log("dur", avg_duration_loss, on_epoch=True, prog_bar=True, sync_dist=True)
         self.log("lr", self.scheduler.get_last_lr()[0], on_epoch=True, prog_bar=True, sync_dist=True)
+        # Free up memory
+        self.training_step_outputs.clear()
 
 
     def test_step(self, batch, batch_idx):

@@ -7,9 +7,12 @@ import os
 import torch
 
 from datamodule import LJSpeechDataModule
-from pytorch_lightning import Trainer
-from pytorch_lightning.strategies.ddp import DDPStrategy
+from lightning import Trainer
+from lightning.pytorch.strategies.ddp import DDPStrategy
+from lightning.pytorch.callbacks import DeviceStatsMonitor
+from lightning.pytorch.profilers import AdvancedProfiler
 from torch import compile
+from torch import _dynamo
 
 from utils.tools import get_args, timed
 from model import EfficientFSModule
@@ -66,9 +69,12 @@ if __name__ == "__main__":
                                   hifigan_checkpoint=args.hifigan_checkpoint,
                                   infer_device=args.infer_device, dropout=args.dropout,
                                   verbose=args.verbose)
+    #opt_pl_module = torch.compile(pl_module, dynamic=True, mode='reduce-overhead')
 
     if args.verbose:
         print_args(args)
+    
+    adv_logger = AdvancedProfiler(filename='advanced_stats')
         
     trainer = Trainer(accelerator=args.accelerator, 
                       devices=args.devices,
@@ -77,8 +83,7 @@ if __name__ == "__main__":
                       strategy = DDPStrategy(find_unused_parameters=False),
                       check_val_every_n_epoch=10,
                       max_epochs=args.max_epochs,
-                      resume_from_checkpoint=args.resume_from_checkpoint,
                       log_every_n_steps=3,
-                      profiler="simple")
+                      profiler=adv_logger)
 
-    trainer.fit(pl_module, datamodule=datamodule)
+    trainer.fit(pl_module, datamodule=datamodule, ckpt_path=args.resume_from_checkpoint)

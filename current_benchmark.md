@@ -4,6 +4,8 @@ Before runtime=129.92
 After runtime=150.55
 Speedup = 0.86292
 
+Most functions ran slower (mean duration)
+
 # AFTER TORCH COMPILE TRAINING_STEP
 
 Speedup 2.9134/2.1273 = 1.36952
