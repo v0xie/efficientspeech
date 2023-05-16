@@ -304,7 +304,7 @@ def get_args():
     parser = argparse.ArgumentParser()
     parser.add_argument("--accelerator", type=str, default="cuda")
     parser.add_argument("--devices", type=int, default=1)
-    parser.add_argument("--precision", default=16, type=int)
+    parser.add_argument("--precision", default='16-mixed', type=str)
     parser.add_argument("--num_workers", type=int, default=4)
     parser.add_argument("--max_epochs", type=int, default=5000)
     parser.add_argument("--warmup_epochs", type=int, default=50)
@@ -374,6 +374,20 @@ def get_args():
                         default="tiny_english",
                         type=str,
                         help="Output folder")
+    parser.add_argument('--resume-from-checkpoint',
+                        default=None,
+                        type=str,
+                        help="Resume training from .ckpt file")
+    parser.add_argument('--log-dir',
+                        default='lightning_logs',
+                        type=str,
+                        help="Where to save training logs")
+    parser.add_argument('--pin-memory',
+                        action='store_true',
+                        help="Copy tensors into device/cuda before returning them")
+    parser.add_argument('--persistent-workers',
+                        action='store_true',
+                        help="Maintain workers Dataset instances alive")
     #parser.add_argument('--seed',
     #                    type=int,
     #                    default=0,
@@ -468,3 +482,16 @@ def get_args():
     args.num_workers *= args.devices
 
     return args
+
+# From https://pytorch.org/tutorials/intermediate/torch_compile_tutorial.html
+# Returns the result of running `fn()` and the time it took for `fn()` to run,
+# in seconds. We use CUDA events and synchronization for the most accurate
+# measurements.
+def timed(fn):
+    start = torch.cuda.Event(enable_timing=True)
+    end = torch.cuda.Event(enable_timing=True)
+    start.record()
+    result = fn()
+    end.record()
+    torch.cuda.synchronize()
+    return result, start.elapsed_time(end) / 1000

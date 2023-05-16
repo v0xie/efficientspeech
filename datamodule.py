@@ -5,8 +5,10 @@ import numpy as np
 from torch.utils.data import Dataset, DataLoader
 
 from text import text_to_sequence
+from utils.tools import get_args
 from utils.tools import pad_1D, pad_2D
-from pytorch_lightning import LightningDataModule
+from lightning import LightningDataModule
+from lightning import LightningDataModule
 from utils.tools import get_mask_from_lengths
 
 class LJSpeechDataModule(LightningDataModule):
@@ -83,19 +85,25 @@ class LJSpeechDataModule(LightningDataModule):
         self.prepare_data()
 
     def train_dataloader(self):
+        args = get_args()
         self.train_dataloader = DataLoader(self.train_dataset,
                                            shuffle=True,
                                            batch_size=self.batch_size,
                                            collate_fn=self.collate_fn,
-                                           num_workers=self.num_workers)
+                                           num_workers=self.num_workers,
+                                           pin_memory=args.pin_memory,
+                                           persistent_workers=args.persistent_workers)
         return self.train_dataloader
 
     def test_dataloader(self):
+        args = get_args()
         self.test_dataloader = DataLoader(self.test_dataset,
                                           shuffle=False,
                                           batch_size=self.batch_size,
                                           collate_fn=self.collate_fn,
-                                          num_workers=self.num_workers)
+                                          num_workers=self.num_workers,
+                                          pin_memory=args.pin_memory,
+                                          persistent_workers=args.persistent_workers)
         return self.test_dataloader
     
     def val_dataloader(self):
