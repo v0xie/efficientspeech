@@ -378,6 +378,10 @@ def get_args():
                         default=None,
                         type=str,
                         help="Resume training from .ckpt file")
+    parser.add_argument('--log-dir',
+                        default='lightning_logs',
+                        type=str,
+                        help="Where to save training logs")
     #parser.add_argument('--seed',
     #                    type=int,
     #                    default=0,

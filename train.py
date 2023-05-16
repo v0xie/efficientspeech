@@ -11,6 +11,7 @@ from lightning import Trainer
 from lightning.pytorch.strategies.ddp import DDPStrategy
 from lightning.pytorch.callbacks import DeviceStatsMonitor
 from lightning.pytorch.profilers import SimpleProfiler, AdvancedProfiler
+from lightning.pytorch.loggers import TensorBoardLogger
 from torch import compile
 from torch import _dynamo
 
@@ -76,6 +77,7 @@ if __name__ == "__main__":
 
     # You are using a CUDA device ('NVIDIA GeForce RTX 3080') that has Tensor Cores. To properly utilize them, you should set `torch.set_float32_matmul_precision('medium' | 'high')` which will trade-off precision for performance. For more details, read https://pytorch.org/docs/stable/generated/torch.set_float32_matmul_precision.html#torch.set_float32_matmul_precision
     torch.set_float32_matmul_precision('medium')
+    logger = TensorBoardLogger(save_dir=args.log_dir)
         
     trainer = Trainer(accelerator=args.accelerator, 
                       devices=args.devices,
