@@ -383,7 +383,7 @@ def get_args():
                         type=str,
                         help="Where to save training logs")
     parser.add_argument('--pin-memory',
-                        action='store-true'
+                        action='store_true',
                         help="Copy tensors into device/cuda before returning them")
     parser.add_argument('--persistent-workers',
                         action='store_true',

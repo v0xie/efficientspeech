@@ -1,17 +1,18 @@
 
 
 import yaml
-#import os
+from torch import set_float32_matmul_precision
 
 #import numpy as np
-import torch
 
 from datamodule import LJSpeechDataModule
+from lightning.pytorch import Trainer
+from lightning.pytorch.strategies.ddp import DDPStrategy
+from lightning.pytorch.loggers import TensorBoardLogger
 
-from utils.tools import get_args, timed
+from utils.tools import get_args
 from model import EfficientFSModule
 
-os.environ['MASTER_ADDR'] = 'localhost'
 
 def print_args(args):
     opt_log =  '--------------- Options ---------------\n'
@@ -63,13 +64,13 @@ if __name__ == "__main__":
                                   hifigan_checkpoint=args.hifigan_checkpoint,
                                   infer_device=args.infer_device, dropout=args.dropout,
                                   verbose=args.verbose)
-    #opt_pl_module = torch.compile(pl_module, dynamic=True, mode='reduce-overhead')
 
     if args.verbose:
         print_args(args)
 
     # You are using a CUDA device ('NVIDIA GeForce RTX 3080') that has Tensor Cores. To properly utilize them, you should set `torch.set_float32_matmul_precision('medium' | 'high')` which will trade-off precision for performance. For more details, read https://pytorch.org/docs/stable/generated/torch.set_float32_matmul_precision.html#torch.set_float32_matmul_precision
-    torch.set_float32_matmul_precision('medium')
+    set_float32_matmul_precision('medium')
+
     tb_logger = TensorBoardLogger(save_dir=args.log_dir)
         
     trainer = Trainer(accelerator=args.accelerator, 

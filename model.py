@@ -172,18 +172,11 @@ class EfficientFSModule(LightningModule):
         loss = (10. * mel_loss) + (2. * pitch_loss) + (2. * energy_loss) + duration_loss
 
         output = {"loss": loss, "mel_loss": mel_loss, "pitch_loss": pitch_loss,
-
-        output = {"loss": loss, "mel_loss": mel_loss, "pitch_loss": pitch_loss,
                 "energy_loss": energy_loss, "duration_loss": duration_loss}
         self.training_step_outputs.append(output)
         return output
-            
-        self.training_step_outputs.append(output)
-        return output
-            
 
     # https://github.com/Lightning-AI/lightning/pull/16520
-    #def training_epoch_end(self, outputs):
     def on_train_epoch_end(self):
         # This if condition is necessary for resuming training, since training_step_outputs can be empty
         if len(self.training_step_outputs) > 0:
@@ -230,13 +223,11 @@ class EfficientFSModule(LightningModule):
                     f.write(text[i] + "\n")
             
     def on_test_epoch_end(self, outputs):
-    def on_test_epoch_end(self, outputs):
         pass
 
     def validation_step(self, batch, batch_idx):
         return self.test_step(batch, batch_idx)
 
-    def on_validation_epoch_end(self):
     def on_validation_epoch_end(self):
         pass
 
