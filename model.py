@@ -9,6 +9,8 @@ import time
 from layers import PhonemeEncoder, MelDecoder, Phoneme2Mel
 from lightning import LightningModule
 from torch import compile
+import torch._dynamo as dynamo
+from torch._dynamo.utils import CompileProfiler
 from torch.optim import AdamW
 from utils.tools import write_to_file, timed
 from scheduler_hack import LinearWarmupCosineAnnealingLR
@@ -193,7 +195,6 @@ class EfficientFSModule(LightningModule):
         self.log("lr", self.scheduler.get_last_lr()[0], on_epoch=True, prog_bar=True, sync_dist=True)
         # Free up memory
         self.training_step_outputs.clear()
-
 
     def test_step(self, batch, batch_idx):
         # TODO: use predict step for wav file generation

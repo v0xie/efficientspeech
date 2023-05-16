@@ -7,6 +7,7 @@ Reference code for FastSpeech2: https://github.com/ming024/FastSpeech2
 
 import torch
 import torch.nn.functional as F
+import torch._dynamo as dynamo
 from torch import nn, compile
 from .blocks import MixFFN, SelfAttention
 from text.symbols import symbols
@@ -286,7 +287,6 @@ class MelDecoder(nn.Module):
             self.blocks.append(nn.ModuleList([conv, nn.LayerNorm(dim_x2)]))
 
         self.mel_linear = nn.Linear(dim_x2, self.n_mel_channels)
-
 
     def forward(self, features):
         skip = self.proj(features)
