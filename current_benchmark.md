@@ -1,4 +1,8 @@
-# AFTER MOVING TRAINING DATA INTO WSL FILESYSTEM FROM WINDOWS FILESYSTEM
+# Batch size 64 from 128 
+Speedup
+18.46/17.90 = 1.03
+
+# NEW BASELINE -MOVING TRAINING DATA INTO WSL FILESYSTEM FROM WINDOWS FILESYSTEM
 wow that's much faster
 42.862/18.46 = 2.321
 
@@ -133,7 +137,8 @@ FIT Profiler Report
 |  [Strategy]DDPStrategy.on_train_end                                                                                                                                   |  6.61e-07             |  1                    |  6.61e-07             |  3.5808e-06       |
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-# NEW BASELINE - AFTER UPGRADE TO LIGHTNING 2.0.2
+# AFTER UPGRADE TO LIGHTNING 2.0.2
+also changing to only 10 epochs
 16-mixed precision and torch.set_float32_matmul_precision('medium')
 all torch compiles removed
 

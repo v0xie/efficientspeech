@@ -5,4 +5,5 @@ python train.py --head 2 --reduction 1 --expansion 2 --kernel-size 5 --n-blocks 
 --preprocess-config config/VCTK/preprocess.yaml \
 --out-folder base_english2 \
 --verbose \
---max_epochs 10
+--max_epochs 10 \
+--batch-size 64
