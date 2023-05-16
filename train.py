@@ -73,9 +73,8 @@ if __name__ == "__main__":
 
     if args.verbose:
         print_args(args)
-    simple_profiler = SimpleProfiler(filename='simple_stats') 
-    adv_logger = AdvancedProfiler(filename='advanced_stats')
-# You are using a CUDA device ('NVIDIA GeForce RTX 3080') that has Tensor Cores. To properly utilize them, you should set `torch.set_float32_matmul_precision('medium' | 'high')` which will trade-off precision for performance. For more details, read https://pytorch.org/docs/stable/generated/torch.set_float32_matmul_precision.html#torch.set_float32_matmul_precision
+
+    # You are using a CUDA device ('NVIDIA GeForce RTX 3080') that has Tensor Cores. To properly utilize them, you should set `torch.set_float32_matmul_precision('medium' | 'high')` which will trade-off precision for performance. For more details, read https://pytorch.org/docs/stable/generated/torch.set_float32_matmul_precision.html#torch.set_float32_matmul_precision
     torch.set_float32_matmul_precision('medium')
         
     trainer = Trainer(accelerator=args.accelerator, 
@@ -85,7 +84,6 @@ if __name__ == "__main__":
                       strategy = DDPStrategy(find_unused_parameters=False),
                       check_val_every_n_epoch=10,
                       max_epochs=args.max_epochs,
-                      log_every_n_steps=3,
-                      profiler='simple')
+                      log_every_n_steps=3)
 
     trainer.fit(pl_module, datamodule=datamodule, ckpt_path=args.resume_from_checkpoint)
