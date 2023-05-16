@@ -180,14 +180,14 @@ class EfficientFSModule(LightningModule):
     # https://github.com/Lightning-AI/lightning/pull/16520
     #def training_epoch_end(self, outputs):
     def on_train_epoch_end(self):
-        #avg_loss = torch.stack([x["loss"] for x in outputs]).mean()
+        avg_loss = torch.stack([x["loss"] for x in self.training_step_outputs]).mean()
         avg_mel_loss = torch.stack([x["mel_loss"] for x in self.training_step_outputs]).mean()
         avg_pitch_loss = torch.stack([x["pitch_loss"] for x in self.training_step_outputs]).mean()
         avg_energy_loss = torch.stack(
             [x["energy_loss"] for x in self.training_step_outputs]).mean()
         avg_duration_loss = torch.stack(
             [x["duration_loss"] for x in self.training_step_outputs]).mean()
-        #self.log("train", avg_loss, on_epoch=True, prog_bar=True)
+        self.log("loss", avg_loss, on_epoch=True, prog_bar=True, sync_dist=True)
         self.log("mel", avg_mel_loss, on_epoch=True, prog_bar=True, sync_dist=True)
         self.log("pitch", avg_pitch_loss, on_epoch=True, prog_bar=True, sync_dist=True)
         self.log("energy", avg_energy_loss, on_epoch=True, prog_bar=True, sync_dist=True)
