@@ -165,7 +165,7 @@ class EfficientFSModule(LightningModule):
     def training_step(self, batch, batch_idx):
         if not self._fn_training_step:
             print('Compiling training step')
-            self._fn_training_step = torch.compile(self._training_step, mode='reduce-overhead', disable=True)
+            self._fn_training_step = torch.compile(self._training_step, mode='reduce-overhead')
         return self._fn_training_step(batch, batch_idx)
         
     def _training_step(self, batch, batch_idx):

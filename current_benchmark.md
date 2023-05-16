@@ -1,5 +1,9 @@
 # AFTER NUM_WORKERS := 12 (from 4)
 
+Before runtime=129.92
+After runtime=150.55
+Speedup = 0.86292
+
 # AFTER TORCH COMPILE TRAINING_STEP
 
 Speedup 2.9134/2.1273 = 1.36952

@@ -7,7 +7,7 @@ Reference code for FastSpeech2: https://github.com/ming024/FastSpeech2
 
 import torch
 import torch.nn.functional as F
-from torch import nn
+from torch import nn, compile
 from .blocks import MixFFN, SelfAttention
 from text.symbols import symbols
 
@@ -412,8 +412,14 @@ class Phoneme2Mel(nn.Module):
 
         self.encoder = encoder
         self.decoder = decoder
+        self._fn_forward = None
 
     def forward(self, x, train=False):
+        if not self._fn_forward:
+            self._fn_forward = torch.compile(self._forward, mode='reduce-overhead')
+        return self._fn_forward(x, train)
+
+    def _forward(self, x, train=False):
         pred = self.encoder(x, train=train)
         mel = self.decoder(pred["features"]) 
         
