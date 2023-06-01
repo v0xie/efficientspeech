@@ -62,7 +62,9 @@ if __name__ == "__main__":
 
     if args.verbose:
         print_args(args)
-        
+
+    torch.set_float32_matmul_precision(args.torch_float32_matmul_precision)
+
     trainer = Trainer(accelerator=args.accelerator, 
                       devices=args.devices,
                       precision=args.precision,
@@ -73,6 +75,8 @@ if __name__ == "__main__":
         model = torch.compile(model)
     
     start_time = datetime.datetime.now()
-    trainer.fit(model, datamodule=datamodule)
+    trainer.fit(model,
+                datamodule=datamodule,
+                ckpt_path=args.resume_from_checkpoint or None)
     elapsed_time = datetime.datetime.now() - start_time
     print(f"Training time: {elapsed_time}")

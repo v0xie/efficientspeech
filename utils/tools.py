@@ -391,7 +391,14 @@ def get_args():
                         default="val_outputs",
                         type=str,
                         help="Output folder during training",)
-
+    parser.add_argument('--torch-float32-matmul-precision',
+                        default='highest',
+                        type=str,
+                        help='Sets internal precision of Torch float32 matmul operations. Default "highest", "high", "medium".')
+    parser.add_argument('--resume-from-checkpoint',
+                        default=None,
+                        type=str,
+                        help="Resume training from .ckpt file")
 
     parser.add_argument("--hifigan-checkpoint",
                         default="hifigan/LJ_V2/generator_v2",
