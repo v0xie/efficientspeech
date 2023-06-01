@@ -195,6 +195,28 @@ python3 train.py --n-blocks 3 --reduction 2
 python3 train.py --head 2 --reduction 1 --expansion 2 --kernel-size 5 --n-blocks 3 --block-depth 3
 ```
 
+## Finetune
+
+**Tiny ES**
+```
+python3 train.py \
+  --resume-from-checkpoint checkpoints/tiny_eng_266k.ckpt --max-epochs 10000
+```
+
+**Small ES**
+
+```
+python3 train.py --n-blocks 3 --reduction 2 \
+  --resume-from-checkpoint checkpoints/small_eng_952k.ckpt --max-epochs 10000
+```
+
+**Base ES**
+
+```
+python3 train.py --head 2 --reduction 1 --expansion 2 --kernel-size 5 --n-blocks 3 --block-depth 3 \
+  --resume-from-checkpoint checkpoints/base_en_4M.ckpt --max-epochs 10000
+```
+
 ## Comparison with other SOTA Neural TTS
 
 [ES vs FS2 vs PortaSpeech vs LightSpeech](https://roatienza.github.io/efficientspeech-demo/)
